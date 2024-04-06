@@ -27,23 +27,30 @@ def count_ids(csv_string):
     return id_count
 
 
-def plot_bar_chart(data):
-    ids = list(data.keys())
-    counts = list(data.values())
+def plot_bar_chart(data,size):
 
-    plt.figure(figsize=(10, 6))
-    plt.bar(ids, counts, color='skyblue')
+    ids = list(data.keys())[::-1]
+    counts = list(data.values())[::-1]
+
+    plt.figure(figsize=(size, 6))
+    plt.barh(ids , counts, color='skyblue')
+
+
     plt.xlabel('ID')
     plt.ylabel('Count')
     plt.title('Count of IDs')
     plt.xticks(rotation=45, ha='right')  # Rotate x-axis labels for better readability
     plt.tight_layout()
+
+    for index, value in enumerate(counts):
+        plt.text(value, index, str(value))
+
     plt.show()
 
 
 def get_name_by_id(csv_data, target_id):
     # Regular expression to match the pattern "Name (ID)"
-    pattern = r'([\w\s-]+)\s\(({})\)'.format(re.escape(target_id))
+    pattern = r'([\w\s,-,.]+)\s\(({})\)'.format(re.escape(target_id))
 
     # Search for the pattern in the CSV data
     match = re.search(pattern, csv_data)
@@ -60,14 +67,14 @@ xlsx_dir = './input.xlsx'
 csv = convert_to_csv(xlsx_dir)
 resault = count_ids(csv)
 sort_resault = sort_by_second_value(resault)
-top_10 = dict(list(sort_resault.items())[:10])
+top_10 = dict(list(sort_resault.items())[:30])
 
 modified_data = {}
 for key,value in top_10.items():
     name = get_name_by_id(csv,str(key))
-    mod_key = str(name)+'\n' + str(key)
+    mod_key = str(name)
     modified_data[mod_key]=value
 print(modified_data)
     
-plot_bar_chart(modified_data)
+plot_bar_chart(modified_data,30)
 
